@@ -34,7 +34,7 @@ async def process_help_command(message: Message):
 async def pressed_button_missing_list(callback: CallbackQuery):
     await callback.message.edit_text(
         text=LEXICON_RU['button_missing_list'],
-        reply_markup=missing_list_kb_builder.as_markup())
+        reply_markup=built_keyboard(add_status_button(callback, COLLEGE_SCHEDULE)).as_markup())
     
 #Хэндлер реагирует на нажатия кнопки 'button_statements'
 @router.callback_query(Text(text='statements_pressed'))
@@ -86,4 +86,4 @@ async def pressed_reset_missing_list(callback: CallbackQuery):
     add_status_button.reset_missing_list()
     await callback.message.edit_text(
         text=LEXICON_RU['button_missing_list'],
-        reply_markup=missing_list_kb_builder.as_markup())
+        reply_markup=built_keyboard(add_status_button(callback, COLLEGE_SCHEDULE)).as_markup())
