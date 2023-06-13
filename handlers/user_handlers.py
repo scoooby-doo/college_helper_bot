@@ -75,8 +75,8 @@ async def pressed_name(callback: CallbackQuery):
 #Хэндлер реагирует на нажатия кнопки 'button_get_missing_list'
 @router.callback_query(Text(text='get_missing_list_pressed'))
 async def pressed_get_missing_list(callback: CallbackQuery):
-    await callback.message.answer(
-        text=get_text_from_file('my_college_assistans_bot/files/file.txt'))
+    text: list[str] = add_status_button.get_missing_list()
+    await callback.message.answer(text=text)
     
 # Хэндлер срабатывает на нажатия кнопки 'button_reset_missing_list'
 # Удаляет все данные о нажатых кнопках

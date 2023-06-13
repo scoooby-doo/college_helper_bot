@@ -48,4 +48,10 @@ class Add_Status_Buttons():
     def reset_missing_list(self):
         self.pressed_nums = []
 
+    def get_missing_list(self) -> list[str]:
+        missing_list = []
+        for index, num in enumerate(self.pressed_nums, 1):
+            missing_list.append(f'{index}) {COLLEGE_SCHEDULE[num]}\n')
+        return ''.join(missing_list)
+
 add_status_button: Add_Status_Buttons = Add_Status_Buttons()
