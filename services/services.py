@@ -34,12 +34,12 @@ class Add_Status_Buttons():
             else:
                 new_schedule[num] = '✅ ' + name
  
-        if True:
-            with open('my_college_assistans_bot/files/file.txt', 'w', encoding='utf-8') as file:
-                new_info = []
-                for index, num in enumerate(self.pressed_nums, 1):
-                    new_info.append(str(index) + ') ' + schedule[num] + '\n')
-                file.writelines(new_info)
+        # if True:
+        #     with open('my_college_assistans_bot/files/file.txt', 'w', encoding='utf-8') as file:
+        #         new_info = []
+        #         for index, num in enumerate(self.pressed_nums, 1):
+        #             new_info.append(str(index) + ') ' + schedule[num] + '\n')
+        #         file.writelines(new_info)
         if new_schedule:
             return new_schedule
         else:
