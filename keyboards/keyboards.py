@@ -4,21 +4,43 @@ from lexicon.lexicon import LEXICON_RU, COLLEGE_SCHEDULE
 
 
 #Создаем объект строителя клавиатур KeyboardBuilder
-missing_list_kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
+# missing_list_kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
 
 #Создаем кнопки клавиатур
 button_missing_list: InlineKeyboardButton = InlineKeyboardButton(
     text='Список отсутствующих',
     callback_data='missing_list_pressed')
+
+#Кнопка которая открывает доступ к другим кнопкам с ведомостями
 button_statement: InlineKeyboardButton = InlineKeyboardButton(
     text='Все ведомости',
-    url='https://drive.google.com/drive/folders/13Dh7dt1E03W48_8JgdDsp6A1FAdYb-vs?usp=sharing',
     callback_data='statements_pressed')
+
+#Кнопки на все ведомости и на ведомости по курсам
+button_all_statements: InlineKeyboardButton = InlineKeyboardButton(
+    text='Все ведомости',
+    url='https://drive.google.com/drive/folders/13Dh7dt1E03W48_8JgdDsp6A1FAdYb-vs?usp=sharing',
+    callback_data='all_statements_pressed')
+button_statement_1_course: InlineKeyboardButton = InlineKeyboardButton(
+    text='1 курс',
+    url='https://drive.google.com/drive/folders/1ofGrbzpzpDKFxMbkURir6UvPAXnMFC78?usp=sharing',
+    callback_data='1_course_pressed')
+button_statement_2_course: InlineKeyboardButton = InlineKeyboardButton(
+    text='2 курс',
+    url='https://drive.google.com/drive/folders/1IhMnimrjRuZoNKtUyQDUXl3LgCb60Crk?usp=sharing',
+    callback_data='2_course_pressed')
+button_statement_3_course: InlineKeyboardButton = InlineKeyboardButton(
+    text='3 курс',
+    url='https://drive.google.com/drive/folders/1IhMnimrjRuZoNKtUyQDUXl3LgCb60Crk?usp=sharing',
+    callback_data='3_course_pressed')
+
+#Кнопка ведущая на сайт колледжа с заменами
 button_schedule_site: InlineKeyboardButton = InlineKeyboardButton(
     text='Замены на сайте колледжа',
     url='http://xn--j1aejj.xn--p1ai/students/class-schedule',
     callback_data='schedule_site_pressed')
 
+#Кнопка назад
 back_button: InlineKeyboardButton = InlineKeyboardButton(
     text='Назад',
     callback_data='back_button_pressed')
@@ -32,13 +54,7 @@ button_get_missing_list: InlineKeyboardButton = InlineKeyboardButton(
 button_reset_missing_list: InlineKeyboardButton = InlineKeyboardButton(
     text='Сбросить список',
     callback_data='reset_missing_list_pressed')
-    # callback_data='reset_missing_list')
 
-buttons: list[InlineKeyboardButton] = []
-for button, text in COLLEGE_SCHEDULE.items():
-    buttons.append(InlineKeyboardButton(
-        text='✅ ' + text,
-        callback_data=button))
 
 #Создаем клавиатуры
 admin_main_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(
@@ -50,12 +66,13 @@ not_admin_main_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(
                      [button_schedule_site]])
 back_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[[back_button]])
+statements_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[[button_statement_1_course],
+                     [button_statement_2_course],
+                     [button_statement_3_course],
+                     [button_all_statements],
+                     [back_button]])
 
-
-#Создание клавиатуры которая появляется по нажатию кнопки 'button_missing_list'
-missing_list_kb_builder.add(*buttons)
-missing_list_kb_builder.adjust(1)
-missing_list_kb_builder.row(back_button)
 
 #Функция которая создает клавиатуру по словарю
 def built_keyboard(dict_text_buttons: dict[str, str]) -> InlineKeyboardBuilder:

@@ -2,7 +2,8 @@ from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import CommandStart, Text, Command
 from lexicon.lexicon import LEXICON_RU, COLLEGE_SCHEDULE
-from keyboards.keyboards import not_admin_main_keyboard, admin_main_keyboard, back_keyboard, missing_list_kb_builder, built_keyboard
+from keyboards.keyboards import not_admin_main_keyboard, admin_main_keyboard, back_keyboard
+from keyboards.keyboards import statements_keyboard, built_keyboard
 from filters.filters import IsAdmin, admin_ids
 from services.services import get_text_from_file, add_status_button
 
@@ -10,14 +11,14 @@ from services.services import get_text_from_file, add_status_button
 #инициализация роутера
 router: Router = Router()
 
-#Хэндлер срабатывает на команду /start
+#Хэндлер срабатывает на команду /start для админов
 @router.message(CommandStart(), IsAdmin(admin_ids))
 async def process_admin_start_command(message: Message):
     await message.answer(text=LEXICON_RU['/start'],
                          reply_markup=admin_main_keyboard)
     # print(message.from_user.id)
 
-#Хэндлер срабатывает на команду /start
+#Хэндлер срабатывает на команду /start для обычных пользователей
 @router.message(CommandStart())
 async def process_not_admin_start_command(message: Message):
     await message.answer(text=LEXICON_RU['/start'],
@@ -41,7 +42,7 @@ async def pressed_button_missing_list(callback: CallbackQuery):
 async def pressed_button_statements(callback: CallbackQuery):
     await callback.message.edit_text(
         text=LEXICON_RU['button_statements'],
-        reply_markup=back_keyboard)
+        reply_markup=statements_keyboard)
 
 #Хэндлер реагирует на нажатия кнопки 'button_schedule_site'
 @router.callback_query(Text(text='schedule_site_pressed'))
@@ -77,6 +78,7 @@ async def pressed_name(callback: CallbackQuery):
 async def pressed_get_missing_list(callback: CallbackQuery):
     text: list[str] = add_status_button.get_missing_list()
     await callback.message.answer(text=text)
+    await callback.answer()
     
 # Хэндлер срабатывает на нажатия кнопки 'button_reset_missing_list'
 # Удаляет все данные о нажатых кнопках
