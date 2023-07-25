@@ -1,90 +1,60 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from lexicon.lexicon import LEXICON_RU, COLLEGE_SCHEDULE
+from lexicon.lexicon import LEXICON_RU
+from services.parser import table_parse
+from services.services import load_from_file, save_json_file
 
 
-#Создаем объект строителя клавиатур KeyboardBuilder
-# missing_list_kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
+button_rbc: InlineKeyboardButton = InlineKeyboardButton(
+    text='rbc.ru',
+    callback_data='rbc_pressed')
 
-#Создаем кнопки клавиатур
-button_missing_list: InlineKeyboardButton = InlineKeyboardButton(
-    text='Список отсутствующих',
-    callback_data='missing_list_pressed')
+button_tinkoff: InlineKeyboardButton = InlineKeyboardButton(
+    text='journal.tinkoff.ru',
+    callback_data='tinkoff_pressed')
 
-#Кнопка которая открывает доступ к другим кнопкам с ведомостями
-button_statement: InlineKeyboardButton = InlineKeyboardButton(
-    text='Все ведомости',
-    callback_data='statements_pressed')
+button_rb: InlineKeyboardButton = InlineKeyboardButton(
+    text='rb.ru',
+    callback_data='pressed_rb')
 
-#Кнопки на все ведомости и на ведомости по курсам
-button_all_statements: InlineKeyboardButton = InlineKeyboardButton(
-    text='Все ведомости',
-    url='https://drive.google.com/drive/folders/13Dh7dt1E03W48_8JgdDsp6A1FAdYb-vs?usp=sharing',
-    callback_data='all_statements_pressed')
-button_statement_1_course: InlineKeyboardButton = InlineKeyboardButton(
-    text='1 курс',
-    url='https://drive.google.com/drive/folders/1ofGrbzpzpDKFxMbkURir6UvPAXnMFC78?usp=sharing',
-    callback_data='1_course_pressed')
-button_statement_2_course: InlineKeyboardButton = InlineKeyboardButton(
-    text='2 курс',
-    url='https://drive.google.com/drive/folders/1IhMnimrjRuZoNKtUyQDUXl3LgCb60Crk?usp=sharing',
-    callback_data='2_course_pressed')
-button_statement_3_course: InlineKeyboardButton = InlineKeyboardButton(
-    text='3 курс',
-    url='https://drive.google.com/drive/folders/1IhMnimrjRuZoNKtUyQDUXl3LgCb60Crk?usp=sharing',
-    callback_data='3_course_pressed')
+button_kommersant: InlineKeyboardButton = InlineKeyboardButton(
+    text='komersant.ru',
+    callback_data='pressed_kommersant')
 
-#Кнопка ведущая на сайт колледжа с заменами
-button_schedule_site: InlineKeyboardButton = InlineKeyboardButton(
-    text='Замены на сайте колледжа',
-    url='http://xn--j1aejj.xn--p1ai/students/class-schedule',
-    callback_data='schedule_site_pressed')
+button_skillbox: InlineKeyboardButton = InlineKeyboardButton(
+    text='skillbox.ru',
+    callback_data='pressed_skillbox')
 
-#Кнопка назад
-back_button: InlineKeyboardButton = InlineKeyboardButton(
-    text='Назад',
-    callback_data='back_button_pressed')
+button_start_customize: InlineKeyboardButton = InlineKeyboardButton(
+    text='Начать настройку',
+    callback_data='pressed_start_customize')
 
-#Кнопка при нажатии которой будет отправлен список отсутствующих
-button_get_missing_list: InlineKeyboardButton = InlineKeyboardButton(
-    text='Получить список',
-    callback_data='get_missing_list_pressed')
-
-#Кнопка при нажатии которой будет сбрасываться весь список к пустому
-button_reset_missing_list: InlineKeyboardButton = InlineKeyboardButton(
-    text='Сбросить список',
-    callback_data='reset_missing_list_pressed')
+button_next_step: InlineKeyboardButton = InlineKeyboardButton(
+    text='Следующий шаг',
+    callback_data='pressed_next_step')
 
 
-#Создаем клавиатуры
-admin_main_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(
-    inline_keyboard=[[button_missing_list],
-                     [button_statement],
-                     [button_schedule_site]])
-not_admin_main_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(
-    inline_keyboard=[[button_statement],
-                     [button_schedule_site]])
-back_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(
-    inline_keyboard=[[back_button]])
-statements_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(
-    inline_keyboard=[[button_statement_1_course],
-                     [button_statement_2_course],
-                     [button_statement_3_course],
-                     [button_all_statements],
-                     [back_button]])
+# Keyboards
+keyboard_start_customize: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[[button_start_customize]])
 
 
-#Функция которая создает клавиатуру по словарю
-def built_keyboard(dict_text_buttons: dict[str, str]) -> InlineKeyboardBuilder:
+def Built_keyboard_choose_sites(user_id: str):
     buttons: list[InlineKeyboardButton] = []
-    for callback_text, text_button in dict_text_buttons.items():
-        buttons.append(InlineKeyboardButton(
-            text=text_button,
-            callback_data=callback_text))
-    new_kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
-    new_kb_builder.add(*buttons)
-    new_kb_builder.adjust(1)
-    new_kb_builder.row(button_reset_missing_list)
-    new_kb_builder.row(button_get_missing_list)
-    new_kb_builder.row(back_button)
-    return new_kb_builder
+    kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
+    users = load_from_file()
+    
+    for key in table_parse.keys():
+        if f'pressed_button_{key}' in users[str(user_id)]['pressed_sites'].keys():
+            buttons.append(InlineKeyboardButton(
+                text=key + '✅',
+                callback_data=f'pressed_button_{key}'))
+        else:    
+            buttons.append(InlineKeyboardButton(
+                text=key + '❌',
+                callback_data=f'pressed_button_{key}'))
+
+    kb_builder.add(*buttons)
+    kb_builder.adjust(1)
+    kb_builder.row(button_next_step)
+    return kb_builder

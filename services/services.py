@@ -1,57 +1,35 @@
-from lexicon.lexicon import COLLEGE_SCHEDULE
-from aiogram.types import CallbackQuery
+from typing import Any
+from aiogram.types import CallbackQuery, Message
+import json
+# from services.parser import table_parse
 
 
-#Функция читает файл, который будет указан
-#и возвращает текст в виде 'str'
-def get_text_from_file(path_to_file: str) -> str:
-    info_from_file = ''
-    with open(path_to_file, 'r', encoding='utf-8') as file:
-        info_from_file = file.read()
-    return info_from_file
+# Фунция для обрезания ссылки до удоборимого варианта
+# Например, https://journal.tinkoff.ru/flows/economics/ -- journal.tinkoff
+def cut_url(url: str):
+    # Делим ссылку на части, чтобы они не были равны пустому символу
+    cropped_url = [item for item in url.split('/') if item != '']
+    # Достаем из ссылки доменное имя исключая домен первого уровня
+    cropped_url = '_'.join(cropped_url[1].split('.')[:-1]).strip()
+    return cropped_url
 
-# print(get_text_from_file('my_college_assistans_bot/files/file.txt'))
 
-#Класс который создает текст для кнопок клавиатуры в зависимости от нажатых кнопок
-class Add_Status_Buttons():
-    #В этом списке будут храниться номера тех на кого уже нажимали кнопку
-    # pressed_nums = []
+# Save to Json
+def save_json_file(data) -> None:
+    with open('data/users.json', 'w', encoding='utf-8') as file:
+        json.dump(data, file, indent=4, ensure_ascii=False)
 
-    def __init__(self) -> None:
-        self.pressed_nums = []
 
-    def __call__(self, callback_num: CallbackQuery, schedule: dict[str, str]) -> bool | dict[str, str]:
-        new_schedule = {}
-        for num, name in schedule.items():
-            if callback_num.data == num and num not in self.pressed_nums:
-                new_schedule[num] = '❌ ' + name
-                self.pressed_nums.append(num)
-            elif callback_num.data == num and num in self.pressed_nums:
-                new_schedule[num] = '✅ ' + name
-                self.pressed_nums.remove(num)
-            elif num in self.pressed_nums:
-                new_schedule[num] = '❌ ' + name
-            else:
-                new_schedule[num] = '✅ ' + name
- 
-        # if True:
-        #     with open('my_college_assistans_bot/files/file.txt', 'w', encoding='utf-8') as file:
-        #         new_info = []
-        #         for index, num in enumerate(self.pressed_nums, 1):
-        #             new_info.append(str(index) + ') ' + schedule[num] + '\n')
-        #         file.writelines(new_info)
-        if new_schedule:
-            return new_schedule
-        else:
-            return False
-        
-    def reset_missing_list(self):
-        self.pressed_nums = []
+# Append to Json file
+def append_to_file(data) -> None:
+    with open('data/users.json', 'a', encoding='utf-8') as file:
+        json.dump(data, file, indent=4, ensure_ascii=False)
 
-    def get_missing_list(self) -> list[str]:
-        missing_list = []
-        for index, num in enumerate(self.pressed_nums, 1):
-            missing_list.append(f'{index}) {COLLEGE_SCHEDULE[num]}\n')
-        return ''.join(missing_list)
 
-add_status_button: Add_Status_Buttons = Add_Status_Buttons()
+# Load from json
+def load_from_file():
+    with open('data/users.json', 'r', encoding='utf-8') as file:
+        data = json.load(file)
+        if data == None:
+            return {}
+        return data
